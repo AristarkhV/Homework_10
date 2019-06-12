@@ -21,7 +21,7 @@ public class Storage<T, K> {
     }
 
     private boolean isCollision(Node<K, T> node, T key) {
-        return (size() > 0 && node != null && node.key != key);
+        return (size() > 0 && node != null && node.entry.getKey() != key);
     }
 
     private void collisionList(Node<K, T>[] node, int basket, Node<K, T> currentNode) {
@@ -44,7 +44,7 @@ public class Storage<T, K> {
         basket = getPutIndex(key);
         loadFactor = currentCapacity * 0.75;
         if (size < loadFactor) {
-            Node<K, T> currentNode = new Node(null, (K) object.getValue(), (T) object.getKey(), null);
+            Node<K, T> currentNode = new Node(null, object, null);
             if (isCollision(values[basket], key)) {
                 collisionList(values, basket, currentNode);
             } else {
@@ -58,14 +58,14 @@ public class Storage<T, K> {
     }
 
     public K get(T key) {
-        if (values[getPutIndex(key)].key == key) {
-            return values[getPutIndex(key)].value;
+        if (values[getPutIndex(key)].entry.getKey() == key) {
+            return values[getPutIndex(key)].entry.getValue();
         }
         Node<K, T> temp = values[getPutIndex(key)];
         do {
             temp = temp.next;
-        } while (temp.key != key);
-        return temp.value;
+        } while (temp.entry.getKey() != key);
+        return temp.entry.getValue();
     }
 
     public int size() {
@@ -77,10 +77,10 @@ public class Storage<T, K> {
         currentCapacity = growArray.length;
         size = 0;
         for (int i = 0; i < values.length; i++) {
-            basket = getPutIndex(values[i].key);
-            Node<K, T> currentNode = new Node(null, (K) values[i].value, (T) values[i].key, null);
+            basket = getPutIndex(values[i].entry.getKey());
+            Node<K, T> currentNode = new Node(null, values[i].entry, null);
             if (values[i] != null) {
-                if (isCollision(growArray[basket], values[i].key)) {
+                if (isCollision(growArray[basket], values[i].entry.getKey())) {
                     collisionList(growArray, basket, currentNode);
                 }
             } else {
