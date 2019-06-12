@@ -1,6 +1,7 @@
 package mateacademy.homework.homework_8;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 public class Storage<T, K> {
 
@@ -48,8 +49,13 @@ public class Storage<T, K> {
             if (isCollision(values[basket], key)) {
                 collisionList(values, basket, currentNode);
             } else {
-                values[basket] = currentNode;
-                size++;
+                if(values[basket] != null
+                        && (values[basket].entry.getKey().equals(currentNode.entry.getKey()))){
+                    values[basket].entry.setValue(currentNode.entry.getValue());
+                }else {
+                    values[basket] = currentNode;
+                    size++;
+                }
             }
         } else {
             growArray();
@@ -58,6 +64,9 @@ public class Storage<T, K> {
     }
 
     public K get(T key) {
+        if(values[getPutIndex(key)] == null){
+            throw new NoSuchElementException();
+        }
         if (values[getPutIndex(key)].entry.getKey() == key) {
             return values[getPutIndex(key)].entry.getValue();
         }
